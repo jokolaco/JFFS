@@ -1,0 +1,62 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.2 Binary Template
+// Just move cursor over magic bytes and press "F5"
+//------------------------------------------------
+
+
+typedef enum <uchar> {none=0,zero=1,RTime=2,RubinMIPS=3,Copy=4,DynRubin=5,Zlib=6,LZO=7,LZMA=8} ComprFlag;
+
+
+typedef struct Node_DIRENT {
+
+uint16 magic <format=hex>;
+uint16 nodetype  <format=hex>;   /* == JFFS2_NODETYPE_DIRENT */
+uint32 totlen    <format=decimal>;
+uint32 hdr_crc   <format=hex>;
+uint32 pino;
+uint32 version;
+uint32 ino; /* == zero for unlink */
+uint32 mctime;
+uint32 nsize;
+uint32 type;
+uint32 unused[2];
+uint32 node_crc  <format=hex>;
+uint32 name_crc  <format=hex>;
+uchar data[totlen-42];
+
+};
+
+typedef struct Node_INODE {
+
+uint16 magic    <format=hex>;      /* A constant magic number.  */
+uint16 nodetype  <format=hex>;  /* == JFFS2_NODETYPE_INODE */
+uint32 totlen    <format=decimal>;     /* Total length of this node (inc data, etc.) */
+uint32 hdr_crc   <format=decimal>;
+uint32 ino <name="Inode number">;        /* Inode number.  */
+uint32 version <name="Chunk number">;     /* Version number.  */
+uint32 mode;       /* The file's type or mode.  */
+uint16 uid;        /* The file's owner.  */
+uint16 gid;        /* The file's group.  */
+uint32 isize <name="Total Filesize">;      /* Total resultant size of this inode (used for truncations)  */
+time_t atime;      /* Last access time.  */
+time_t mtime;      /* Last modification time.  */
+time_t ctime;      /* Change time.  */
+uint32 offset;     /* Where to begin to write.  */
+uint32 csize    <name="Compressed data size"> ;      /* (Compressed) data size */
+uint32 dsize    <name="Decompressed data size"> ;       /* Size of the node's data. (after decompression) */
+ComprFlag compr     <name="Compression algorithm used"> ;       /* Compression algorithm used */
+uchar usercompr <name="Compression algorithm requested"> ;   /* Compression algorithm requested by the user */
+uint16 flags;      /* See JFFS2_INO_FLAG_* */
+uint32 data_crc <format=decimal>;   /* CRC for the (compressed) data.  */
+uint32 node_crc <format=decimal>;   /* CRC for the raw inode (excluding data)  */
+uchar data[csize] <fgcolor=0x1D982F, bgcolor=0x0>; // needs to handle padding (FFs)
+
+
+};
+
+
+Printf( "%i\n", GetCursorPos() );
+FSeek(GetCursorPos());
+
+Node_INODE b  <name="Inode Header Info">;
+
